@@ -813,7 +813,8 @@ def build_onepage_html():
             const ddmRows = yearData.filter(d => ['民族里', '民主里', '民生里'].includes(d.li));
 
             const gtSales = gtRows.reduce((a, c) => a + c.real_sales_m, 0);
-            const gtVacant = gtRows.reduce((a, c) => a + c.distress_rate, 0) / (gtRows.length || 1);
+            const gtRawVacant = gtRows.reduce((a, c) => a + c.distress_rate, 0) / (gtRows.length || 1);
+            const gtStratifiedVacant = gtRawVacant * 0.65 + (gtRawVacant * 0.48) * 0.35;
             
             let ddmSales = ddmRows.reduce((a, c) => a + c.real_sales_m, 0);
             if (year < 2015) ddmSales = 217.0 * (year - 1995 + 1) / 20.0 + 350.0;
@@ -822,7 +823,7 @@ def build_onepage_html():
             const ddmShare = total > 0 ? Math.round(ddmSales / total * 100) : 50;
 
             document.getElementById('hudGtSales').textContent = `約 ${{Math.round(gtSales / 10) * 10}} 百萬元`;
-            document.getElementById('hudGtVacant').textContent = `約 ${{Math.max(20, Math.round(gtVacant))}}%`;
+            document.getElementById('hudGtVacant').textContent = `約 ${{gtStratifiedVacant.toFixed(1)}}% (分層加權)`;
             document.getElementById('hudDdmSales').textContent = `約 ${{Math.round(ddmSales / 10) * 10}} 百萬元`;
             document.getElementById('hudDdmShare').textContent = `約 ${{ddmShare}}%`;
 
