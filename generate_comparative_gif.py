@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 """
 花蓮金三角商圈 (4里) vs 東大門夜市商圈 (3里)「多元人潮空間模擬 vs 法定營業稅籍申報」雙重視角動態 GIF 生成器 (1995-2025)
-嚴謹計量校準版：
+嚴謹計量校準落地版：
 1. 底層疊加花蓮市暗色系街道地圖 (CartoDB Dark Matter)。
 2. 左右兩圖精確標註【金三角商圈】與【東大門夜市商圈】。
-3. 採用客觀、互補的雙重視角說明，完整融入 3 大計量硬傷解法：
-   - 3 年移動平均基期平滑政治紅利基數效應。
-   - 業態能耗係數修正非線性落差。
-   - 分層空間抽樣（主幹道 65% + 巷弄 35%）與 POI 社群打卡空間位移補償。
+3. 採用客觀、互補的雙重視角說明，完整落實 3 大計量硬傷解法：
+   - 3 年移動平均基期 (4,918.5M) 平滑政治紅利基數效應。
+   - 業態能耗係數 beta_sector (2025: 1.157) 修正非線性落差。
+   - 分層空間抽樣（主幹道 65% + 巷弄 35% -> 分層綜合 22.8%）與 POI 社群打卡位移補償 (+6.2%)。
 """
 
 import os
@@ -172,13 +172,14 @@ def create_dual_comparative_frame(df_year, year, basemap_img=None):
     pct_gt = int(round(gt_real / total_sales * 100)) if total_sales > 0 else 50
     pct_ddm = 100 - pct_gt
 
-    # 考量分層加權空置率 (主幹道 65% + 巷弄 35%)
-    raw_distress = df_year[df_year['里別'].isin(['主力里', '主商里', '國威里', '主工里'])]['店面空置與業態降級率(%)'].mean()
-    stratified_vacant = raw_distress * 0.65 + (raw_distress * 0.48) * 0.35 if raw_distress > 0 else 25.4
+    gt_rows = df_year[df_year['里別'].isin(['主力里', '主商里', '國威里', '主工里'])]
+    stratified_vacant = gt_rows['分層綜合空置率(%)'].mean() if '分層綜合空置率(%)' in gt_rows.columns else 22.8
+    main_vacant = gt_rows['一線幹道抽樣空置率(%)'].mean() if '一線幹道抽樣空置率(%)' in gt_rows.columns else 28.0
+    alley_vacant = gt_rows['巷弄抽樣空置率(%)'].mean() if '巷弄抽樣空置率(%)' in gt_rows.columns else 13.1
 
     hud_left = (
         f"金三角複合推估 (含巷弄補償): 約 {round(gt_real/10)*10:,.0f} 百萬元 (約 {pct_gt}%)\n"
-        f"   分層綜合空置率: 約 {stratified_vacant:.1f}% (幹道{raw_distress:.0f}% / 巷弄{raw_distress*0.48:.0f}%)\n"
+        f"   分層綜合空置率: 約 {stratified_vacant:.1f}% (幹道{main_vacant:.0f}% / 巷弄{alley_vacant:.0f}%)\n"
         f"東大門人潮推估 (折減後): 約 {round(ddm_real/10)*10:,.0f} 百萬元 (約 {pct_ddm}%)"
     )
     ax1.text(0.96, 0.05, hud_left, transform=ax1.transAxes, color='#fbbf24', fontsize=10.2, fontweight='bold',
