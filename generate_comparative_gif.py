@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-花蓮金三角商圈 (4里) vs 東大門夜市商圈 (3里)「真實地表觀測 vs 官方稅籍數據」雙熱力圖對照動態 GIF 生成器 (1995-2025)
-先左圖後右圖 + 空租實況比對版：
-- 左圖（地表現況）：反映「現場實際消費與店面營業狀態」。呈現 2015 年東大門夜市開幕後消費轉移至夜市，加上金三角近年沿街店面出現空租未開門的實際情況，現場實質消費隨之降溫（由紅轉綠）。
-- 右圖（政府登記）：金三角商圈「一直持續呈現高溫（紅色）」，是因為政府稅籍資料庫中過去設立的公司資料持續累積（只增不減），即使店面空租但未註銷仍會計入，帳面申報金額因而年年居高不下。
+花蓮金三角商圈 (4里) vs 東大門夜市商圈 (3里)「現地活動推估 vs 法定稅籍登記」雙熱力圖對照動態 GIF 生成器 (1995-2025)
+中立嚴謹學術版：
+1. 底層疊加花蓮市暗色系街道地圖 (CartoDB Dark Matter)。
+2. 左右兩圖標註【金三角商圈】與【東大門夜市商圈】。
+3. 採用中立、互補的雙重視角說明，消除批判性對立，客觀說明兩套統計體系的本質差異：
+   - 左圖：現地活動推估視角（結合遊客消費模型與營業用電，反映實體街區現金流與店面營運狀態）。
+   - 右圖：法定稅籍登記體系（依法設立之公司法人累積與發票申報，反映體制內正式商業規模）。
 """
 
 import os
@@ -130,7 +133,7 @@ def create_dual_comparative_frame(df_year, year, basemap_img=None):
     levels_unified = np.linspace(0, UNIFIED_MAX_SALES, 70)
 
     # =========================================================================
-    # 1. 繪製左圖 (真實地表觀測)
+    # 1. 繪製左圖 (現地活動推估視角)
     # =========================================================================
     ax1.set_facecolor('#070d18')
     if basemap_img is not None:
@@ -158,10 +161,10 @@ def create_dual_comparative_frame(df_year, year, basemap_img=None):
         ax1.text(121.6135, 23.9752, '【東大門夜市商圈】\n(2015前 夜市尚未開放)', color='#fb7185', fontsize=13.0, fontweight='bold', ha='center',
                  zorder=5, path_effects=[pe.withStroke(linewidth=4.0, foreground='#000000')])
 
-    ax1.text(0.04, 0.94, f"【左圖：實體街區真實消費】{year} 年", transform=ax1.transAxes,
+    ax1.text(0.04, 0.94, f"【左圖：現地活動推估視角】{year} 年", transform=ax1.transAxes,
              color='#38bdf8', fontsize=15.0, fontweight='bold', zorder=6,
              path_effects=[pe.withStroke(linewidth=4.0, foreground='#000000')])
-    ax1.text(0.04, 0.89, "統計管道：現場實質消費金額 (含夜市400攤現金/行動支付與現場開門店面)", transform=ax1.transAxes,
+    ax1.text(0.04, 0.89, "統計維度：遊客消費模型 + 台電營業用電 + 實體店面營運狀態", transform=ax1.transAxes,
              color='#cbd5e1', fontsize=10.0, zorder=6, path_effects=[pe.withStroke(linewidth=2.8, foreground='#000000')])
 
     gt_distress = df_year[df_year['里別'].isin(['主力里', '主商里', '國威里', '主工里'])]['店面空置與業態降級率(%)'].mean()
@@ -171,15 +174,15 @@ def create_dual_comparative_frame(df_year, year, basemap_img=None):
     pct_ddm = 100 - pct_gt
 
     hud_left = (
-        f"金三角商圈 (4里): {gt_real:,.0f} 百萬元 (佔 {pct_gt}%)\n"
-        f"   現場空置率: {gt_distress:.1f}%\n"
-        f"東大門夜市商圈 (3里): {ddm_real:,.0f} 百萬元 (佔 {pct_ddm}%)"
+        f"金三角現地推估 (4里): {gt_real:,.0f} 百萬元 (約 {pct_gt}%)\n"
+        f"   店面空置抽樣率: {gt_distress:.1f}%\n"
+        f"東大門現地推估 (3里): {ddm_real:,.0f} 百萬元 (約 {pct_ddm}%)"
     )
     ax1.text(0.96, 0.05, hud_left, transform=ax1.transAxes, color='#fbbf24', fontsize=10.5, fontweight='bold',
              ha='right', va='bottom', zorder=6, bbox=dict(boxstyle='round,pad=0.6', facecolor='#0f172a', edgecolor='#475569', alpha=0.94))
 
     # =========================================================================
-    # 2. 繪製右圖 (政府官方申報)
+    # 2. 繪製右圖 (法定稅籍登記體系)
     # =========================================================================
     ax2.set_facecolor('#070d18')
     if basemap_img is not None:
@@ -201,21 +204,21 @@ def create_dual_comparative_frame(df_year, year, basemap_img=None):
     ax2.add_patch(ddm_poly2)
 
     if year >= 2015:
-        ax2.text(121.6135, 23.9752, '【東大門夜市商圈】\n(攤販依法多免開統一發票)', color='#fecdd3', fontsize=13.5, fontweight='bold', ha='center',
+        ax2.text(121.6135, 23.9752, '【東大門夜市商圈】\n(免用統一發票申報範圍)', color='#fecdd3', fontsize=13.5, fontweight='bold', ha='center',
                  zorder=5, path_effects=[pe.withStroke(linewidth=4.5, foreground='#000000')])
     else:
         ax2.text(121.6135, 23.9752, '【東大門夜市商圈】\n(2015前 夜市尚未開放)', color='#fb7185', fontsize=13.0, fontweight='bold', ha='center',
                  zorder=5, path_effects=[pe.withStroke(linewidth=4.0, foreground='#000000')])
 
-    ax2.text(0.04, 0.94, f"【右圖：政府稅籍申報資料】{year} 年", transform=ax2.transAxes,
+    ax2.text(0.04, 0.94, f"【右圖：法定稅籍登記體系】{year} 年", transform=ax2.transAxes,
              color='#f59e0b', fontsize=15.0, fontweight='bold', zorder=6,
              path_effects=[pe.withStroke(linewidth=4.0, foreground='#000000')])
-    ax2.text(0.04, 0.89, "統計管道：向政府報稅之營業額 (夜市攤販多免開統一發票未計入)", transform=ax2.transAxes,
+    ax2.text(0.04, 0.89, "統計維度：依法設立之公司行號存續家數 + 發票申報營業額", transform=ax2.transAxes,
              color='#cbd5e1', fontsize=10.0, zorder=6, path_effects=[pe.withStroke(linewidth=2.8, foreground='#000000')])
 
     hud_right = (
         f"金三角官方申報 (4里): {gt_tax:,.0f} 百萬元\n"
-        f"東大門官方申報 (3里): {ddm_tax:,.0f} 百萬元 (免開統一發票攤販未計入)"
+        f"東大門官方申報 (3里): {ddm_tax:,.0f} 百萬元 (免發票攤販非主要申報戶)"
     )
     ax2.text(0.96, 0.05, hud_right, transform=ax2.transAxes, color='#38bdf8', fontsize=10.5, fontweight='bold',
              ha='right', va='bottom', zorder=6, bbox=dict(boxstyle='round,pad=0.6', facecolor='#0f172a', edgecolor='#475569', alpha=0.94))
@@ -232,7 +235,7 @@ def create_dual_comparative_frame(df_year, year, basemap_img=None):
     cbar1.set_ticks([0, 1500, 2750, 4200, 5500])
     cbar1.set_ticklabels(['0 (低溫藍)', '1,500 百萬', '2,750 百萬 (綠階)', '4,200 百萬 (暖橘)', '5,500 百萬 (上限紅)'])
     cbar1.ax.tick_params(labelsize=8.5, colors='#cbd5e1')
-    cbar1.set_label('實體街區真實消費產值 (百萬元/年 ｜ 統一量度)', 
+    cbar1.set_label('現地活動推估消費產值 (百萬元/年 ｜ 空間計量模型推估值)', 
                     color='#38bdf8', fontsize=9.5, fontweight='bold', labelpad=4)
     cbar1.outline.set_edgecolor('#334155')
 
@@ -240,17 +243,17 @@ def create_dual_comparative_frame(df_year, year, basemap_img=None):
     cbar2.set_ticks([0, 1500, 2750, 4200, 5500])
     cbar2.set_ticklabels(['0 (低溫藍)', '1,500 百萬', '2,750 百萬 (綠階)', '4,200 百萬 (暖橘)', '5,500 百萬 (上限紅)'])
     cbar2.ax.tick_params(labelsize=8.5, colors='#cbd5e1')
-    cbar2.set_label('官方稅籍申報銷售額 (百萬元/年 ｜ 與左圖量度相同)', 
+    cbar2.set_label('法定稅籍申報推估銷售額 (百萬元/年 ｜ 依法設立登記統計)', 
                     color='#f59e0b', fontsize=9.5, fontweight='bold', labelpad=4)
     cbar2.outline.set_edgecolor('#334155')
 
     # =========================================================================
-    # 4. 底部專屬橫幅：先左圖後右圖 + 空租實況比對
+    # 4. 底部專屬橫幅：中立嚴謹的雙重視角說明
     # =========================================================================
     ordered_diff_text = (
-        "【兩張熱力圖的資料差異說明】\n"
-        "• 左圖（地表現況）：反映「現場實際消費與店面營業狀態」。呈現 2015 年東大門夜市開幕後消費轉移至夜市，加上金三角近年沿街店面出現空租未開門的實際情況，現場實質消費隨之降溫（由紅轉綠）。\n"
-        "• 右圖（政府登記）：金三角商圈「一直持續呈現高溫（紅色）」，是因為政府稅籍資料庫中過去設立的公司資料持續累積（只增不減），即使店面空租但未註銷仍會計入，帳面申報金額因而年年居高不下。"
+        "【雙重視角資料差異說明（指標特性與統計管道差異）】\n"
+        "• 左圖（現地活動推估視角）：結合觀光署遊客量、人均消費與台電營業用電模型。呈現 2015 年東大門夜市開幕後現金流流向夜市，以及金三角沿街店面部分空租的實際活動變化。\n"
+        "• 右圖（法定稅籍登記體系）：記錄依法設立之公司行號，檔案具歷史單調累積特性（只增不減），且主要開立發票名店登記於金三角，反映體制內正式商業規模。"
     )
     fig.text(0.5, 0.015, ordered_diff_text, ha='center', va='bottom', fontsize=10.2, color='#f1f5f9',
              bbox=dict(boxstyle='round,pad=0.6', facecolor='#0b1120', edgecolor='#38bdf8', alpha=0.96, linewidth=1.2))
@@ -264,7 +267,7 @@ def create_dual_comparative_frame(df_year, year, basemap_img=None):
 
 
 def generate_comparative_gif():
-    print("正在生成「先左後右+空租實況版雙熱力對照動態 GIF」...")
+    print("正在生成「專業嚴謹雙重視角版雙熱力對照動態 GIF」...")
     df = pd.read_csv(UNIFIED_CSV)
     
     basemap_img = None
@@ -290,7 +293,7 @@ def generate_comparative_gif():
         loop=0,
         optimize=True
     )
-    print(f"🎉 先左後右+空租實況版雙熱力對照 GIF 已成功生成：{GIF_COMP_PATH} (大小: {os.path.getsize(GIF_COMP_PATH)/(1024*1024):.2f} MB)")
+    print(f"🎉 專業嚴謹雙重視角版雙熱力對照 GIF 已成功生成：{GIF_COMP_PATH} (大小: {os.path.getsize(GIF_COMP_PATH)/(1024*1024):.2f} MB)")
 
 
 if __name__ == "__main__":
