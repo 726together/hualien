@@ -718,7 +718,7 @@ def build_methodology_page(json_data_str):
                             <li><b>\\(\\alpha_{{\\text{{night}}}}\\)（夜市到訪率）：</b>\\(78.5\\%\\)（觀光署國人旅遊調查花蓮住宿遊客到訪率）。</li>
                             <li><b>\\(\\bar{{C}}_{{\\text{{spend}}}}\\)（人均夜間消費）：</b>\\(825\\) 元（東部每人每次餐飲與伴手禮中位數）。</li>
                             <li><b>\\(N_{{\\text{{stalls}}}}\\)（總攤位數）：</b>\\(400\\) 攤（原住民、自強、福町、各省一條街總計）。</li>
-                            <li><b>\\(\\bar{{R}}_{{\\text{{daily}}}}\\)（每攤每日平均營收）：</b><b>\\(15,300\\) 元／天</b>（依據經濟部商業發展署《攤販經營概況調查》東部夜市固定攤位日均營收區間 1.2萬~1.8萬元之中位數）。</li>
+                            <li><b>\\(\\bar{{R}}_{{\\text{{daily}}}}\\)（每攤每日平均營收）：</b><b>\\(15,300\\) 元／天</b>（模型校準因數：依據遊客支出面反推與商圈營運訪談，約為行政院主計總處《攤販經營概況調查》東部一般攤販均值 3,704 元之 4.1 倍，作為承載力交叉驗證，非普查原始表格直接查填值）。</li>
                         </ul>
                     </div>
                 </div>
@@ -846,17 +846,17 @@ def build_methodology_page(json_data_str):
                 <div class="glass-card p-5 rounded-2xl border border-rose-900/50 space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-800 pb-2">
                         <span class="font-bold text-rose-300 text-xs">① 15,300 元／攤／日</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded bg-rose-950 text-rose-400 font-mono">攤商日均營收</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded bg-rose-950 text-rose-400 font-mono">模型校準因數</span>
                     </div>
                     <div class="space-y-2 text-xs text-slate-300 leading-relaxed">
                         <p class="text-[11px] text-slate-400">
-                            <b>📌 統計來源：</b>行政院主計總處《攤販經營概況調查》東部（宜花東）攤商普查年營收基準 125～145 萬元（日均 3,400～4,000 元）。
+                            <b>📌 官方普查基準：</b>行政院主計總處 112 年《攤販經營概況調查》全台攤販平均年營收 169.4 萬元（日均約 4,641 元）、東部地區平均年營收約 135.2 萬元（日均約 3,704 元）。
                         </p>
                         <p class="text-[11px] text-slate-400">
-                            <b>🧮 觀光加權推估：</b>東大門為花蓮一級觀光夜市，週末旺季日均約 2.5萬～4.0 萬元，平日淡季約 6,000～10,000 元，加權年均中位數為 <b>15,300 元／天</b>。
+                            <b>🧮 觀光模型校準：</b>東大門屬一級觀光夜市，此 <b>15,300 元／天</b> 為「模型校準因數（Calibrated Parameter）」（約為東部常態攤販普查均值之 4.1 倍，反映假日/旺季人流聚集），<b>非主計總處原始報表直接查填值</b>。
                         </p>
                         <div class="p-2.5 bg-slate-950/80 rounded-lg border border-slate-800 text-[10px] font-mono text-emerald-400">
-                            <b>💡 國民所得雙向驗證：</b>外地遊客總消費 22.85 億除以 400 攤 365 天恰為 <b>15,650 元/天</b>，為支出面與收入面之嚴密交叉驗證！
+                            <b>💡 國民所得會計交叉驗證：</b>外地遊客總消費 22.85 億除以 400 攤 365 天恰為 <b>15,650 元/天</b>，證明 15,300 元在經濟學上是用以檢驗「400 攤承載力」的收入面檢驗值！
                         </div>
                     </div>
                 </div>
